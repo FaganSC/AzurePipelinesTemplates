@@ -30,6 +30,6 @@ jobs:
     displayName: Purge Azure CDN Endpoint '${{ parameters.endpoint_name }}'
     inputs:
       azureSubscription: '${{ parameters.azure_subscription }}'
-      scriptType: 'batch'
+      scriptType: 'bash'
       scriptLocation: 'inlineScript'
-      inlineScript: 'az cdn endpoint purge -g ${{ parameters.resource_group_name }} -n ${{ parameters.endpoint_name }} --profile-name ${{ parameters.profile_name }} --content-paths ''/*'''
+      inlineScript: "az cdn endpoint purge -g ${{ parameters.resource_group_name }} -n ${{ parameters.endpoint_name }} --profile-name ${{ parameters.profile_name }} --content-paths '/*'"
