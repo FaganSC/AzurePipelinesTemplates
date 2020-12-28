@@ -2,7 +2,7 @@ parameters:
   # unique name of the job
   job_name: purge_azure_cdn
   # friendly name of the job
-  display_name: Purge Azure CDN Enpoint
+  display_name: Purge Azure CDN Endpoint
   # agent pool details (default: MSFT hosted Ubuntu)
   pool:
     vmImage: ubuntu-latest
@@ -27,9 +27,9 @@ jobs:
   ## Purge Azure CDN Endpoint CLI Command
   ##########################################
   - task: AzureCLI@2
-    displayName: Purge Azure CDN Endpoint '$(endpoint_name)'
+    displayName: Purge Azure CDN Endpoint '${{ parameters.endpoint_name }}'
     inputs:
-      azureSubscription: 'FaganCloudAzure'
+      azureSubscription: '${{ parameters.azure_subscription }}'
       scriptType: 'batch'
       scriptLocation: 'inlineScript'
-      inlineScript: 'az cdn endpoint purge -g $(resource_group_name) -n $(endpoint_name) --profile-name $(profile_name) --content-paths ''/*'''
+      inlineScript: 'az cdn endpoint purge -g ${{ parameters.resource_group_name }} -n ${{ parameters.endpoint_name }} --profile-name ${{ parameters.profile_name }} --content-paths ''/*'''
