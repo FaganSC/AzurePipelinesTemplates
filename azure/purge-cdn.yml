@@ -1,0 +1,41 @@
+parameters:
+  # unique name of the job
+  job_name: purge-azure-cdn
+  # friendly name of the job
+  display_name: Purge Azure CDN Enpoint
+  # agent pool details (default: MSFT hosted Ubuntu)
+  pool:
+    vmImage: ubuntu-latest
+  # name of target enviroment deploying to
+  target_environment: ''
+  # additional arguments to add to execution of o365cli
+  resource_group_name: ''
+  endpoint_name: '' 
+  profile_name: ''
+  # node version
+  node_version: '10.x'
+  condition: { }
+  variables_group: ''
+
+jobs:
+- deployment: ${{ parameters.job_name }}
+  displayName: ${{ parameters.display_name }}
+  pool: ${{ parameters.pool }}
+  environment: ${{ parameters.target_environment }}
+  condition: ${{ parameters.condition }}
+  variables:
+  - group: ${{ parameters.variables_group }}
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        ##########################################
+        ## Purge Azure CDN Endpoint CLI Command
+        ##########################################
+        - task: AzureCLI@2
+          displayName: Purge Azure CDN Endpoint '$(endpoint_name)'
+          inputs:
+            azureSubscription: 'FaganCloudAzure'
+            scriptType: 'batch'
+            scriptLocation: 'inlineScript'
+            inlineScript: 'az cdn endpoint purge -g $(resource_group_name) -n $(endpoint_name) --profile-name $(profile_name) --content-paths ''/*'''
