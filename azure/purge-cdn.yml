@@ -6,8 +6,6 @@ parameters:
   # agent pool details (default: MSFT hosted Ubuntu)
   pool:
     vmImage: ubuntu-latest
-  # name of target enviroment deploying to
-  target_environment: ''
   # additional arguments to add to execution
   azure_subscription: ''
   resource_group_name: ''
@@ -21,7 +19,6 @@ parameters:
 jobs:
 - deployment: ${{ parameters.job_name }}
   displayName: ${{ parameters.display_name }}
-  environment: ${{ parameters.target_environment }} 
   condition: ${{ parameters.condition }}
   strategy:
     runOnce:
