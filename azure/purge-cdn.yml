@@ -1,6 +1,6 @@
 parameters:
   # unique name of the job
-  job_name: purge-azure-cdn
+  job_name: purge_azure_cdn
   # friendly name of the job
   display_name: Purge Azure CDN Enpoint
   # agent pool details (default: MSFT hosted Ubuntu)
