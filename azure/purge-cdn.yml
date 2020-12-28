@@ -20,6 +20,8 @@ parameters:
 
 jobs:
 - job: ${{ parameters.job_name }}
+  displayName: ${{ parameters.display_name }}
+  pool: ${{ parameters.pool }}
   steps:
   ##########################################
   ## Purge Azure CDN Endpoint CLI Command
