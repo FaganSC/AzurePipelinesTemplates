@@ -19,21 +19,15 @@ parameters:
   variables_group: ''
 
 jobs:
-- deployment: ${{ parameters.job_name }}
-  displayName: ${{ parameters.display_name }}
-  environment: ${{ parameters.target_environment }} 
-  condition: ${{ parameters.condition }}
-  strategy:
-    runOnce:
-      deploy:
-        steps:
-        ##########################################
-        ## Purge Azure CDN Endpoint CLI Command
-        ##########################################
-        - task: AzureCLI@2
-          displayName: Purge Azure CDN Endpoint '$(endpoint_name)'
-          inputs:
-            azureSubscription: 'FaganCloudAzure'
-            scriptType: 'batch'
-            scriptLocation: 'inlineScript'
-            inlineScript: 'az cdn endpoint purge -g $(resource_group_name) -n $(endpoint_name) --profile-name $(profile_name) --content-paths ''/*'''
+- job: ${{ parameters.job_name }}
+  steps:
+  ##########################################
+  ## Purge Azure CDN Endpoint CLI Command
+  ##########################################
+  - task: AzureCLI@2
+    displayName: Purge Azure CDN Endpoint '$(endpoint_name)'
+    inputs:
+      azureSubscription: 'FaganCloudAzure'
+      scriptType: 'batch'
+      scriptLocation: 'inlineScript'
+      inlineScript: 'az cdn endpoint purge -g $(resource_group_name) -n $(endpoint_name) --profile-name $(profile_name) --content-paths ''/*'''
