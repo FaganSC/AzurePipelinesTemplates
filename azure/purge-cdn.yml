@@ -21,6 +21,7 @@ parameters:
 jobs:
 - deployment: ${{ parameters.job_name }}
   displayName: ${{ parameters.display_name }}
+  environment: ${{ parameters.target_environment }} 
   condition: ${{ parameters.condition }}
   strategy:
     runOnce:
