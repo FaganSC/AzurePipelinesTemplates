@@ -8,7 +8,8 @@ parameters:
     vmImage: ubuntu-latest
   # name of target enviroment deploying to
   target_environment: ''
-  # additional arguments to add to execution of o365cli
+  # additional arguments to add to execution
+  azure_subscription: ''
   resource_group_name: ''
   endpoint_name: '' 
   profile_name: ''
@@ -23,8 +24,6 @@ jobs:
   pool: ${{ parameters.pool }}
   environment: ${{ parameters.target_environment }}
   condition: ${{ parameters.condition }}
-  variables:
-  - group: ${{ parameters.variables_group }}
   strategy:
     runOnce:
       deploy:
@@ -35,7 +34,7 @@ jobs:
         - task: AzureCLI@2
           displayName: Purge Azure CDN Endpoint '$(endpoint_name)'
           inputs:
-            azureSubscription: 'FaganCloudAzure'
+            azureSubscription: $(azure_subscription)
             scriptType: 'batch'
             scriptLocation: 'inlineScript'
             inlineScript: 'az cdn endpoint purge -g $(resource_group_name) -n $(endpoint_name) --profile-name $(profile_name) --content-paths ''/*'''
