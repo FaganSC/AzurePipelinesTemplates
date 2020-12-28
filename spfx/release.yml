@@ -1,0 +1,61 @@
+parameters:
+  # unique name of the job
+  job_name: gitbubrelease
+  # friendly name of the job
+  display_name: GitHub Release
+  # agent pool details (default: MSFT hosted Ubuntu)
+  pool:
+    vmImage: ubuntu-latest
+  # name of target enviroment deploying to
+  target_environment: ''
+  # additional arguments to add to execution of o365cli
+  # node version
+  node_version: '10.x'
+  condition: { }  
+  isPreRelease: False
+  hasChangeLog: False
+  variables_group: ''
+  release_title: '$(Build.BuildNumber)'
+jobs:
+- deployment: ${{ parameters.job_name }}
+  displayName: ${{ parameters.display_name }}
+  pool: ${{ parameters.pool }}
+  environment: ${{ parameters.target_environment }}
+  condition: ${{ parameters.condition }}
+  variables:
+  - group: ${{ parameters.variables_group }}
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        ##########################################
+        ## download previously built *.sppkg
+        ##########################################
+        - task: DownloadPipelineArtifact@2
+          displayName: Download SharePoint package (*.sppkg)
+          inputs:
+            buildType: current
+            artifactName: spfx-package
+        ##########################################
+        ## determine name of generated *.sppkg
+        ##########################################
+        - script: |
+            CMD_GET_SPPKG_NAME=$(find $(Pipeline.Workspace)/spfx-package -name '*.sppkg' -exec basename {} \;)
+            echo "##vso[task.setvariable variable=SpPkgFileName;isOutput=true]${CMD_GET_SPPKG_NAME}"
+          displayName: Get generated *.sppkg filename
+          name: GetSharePointPackage
+        ##########################################
+        ## upload *.sppkg to the target app catalog
+        ##########################################
+        - task: GitHubRelease@1
+          inputs:
+            gitHubConnection: 'FaganSC-GitHub'
+            repositoryName: '$(Build.Repository.Name)'
+            action: 'create'
+            target: '$(Build.SourceVersion)'
+            tagSource: 'userSpecifiedTag'
+            tag: 'v$(Build.BuildNumber)'
+            title: ${{ parameters.release_title }}
+            assets: '$(Pipeline.Workspace)/spfx-package/$(GetSharePointPackage.SpPkgFileName)'
+            addChangeLog: ${{ parameters.hasChangeLog }}
+            isPreRelease: ${{ parameters.isPreRelease }}

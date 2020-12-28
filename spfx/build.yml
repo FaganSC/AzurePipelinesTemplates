@@ -1,0 +1,104 @@
+parameters:
+  # unique name of the job
+  job_name: build_package
+  # friendly name of the job
+  display_name: SPFx Build & Packaging
+  # agent pool details (default: MSFT hosted Ubuntu)
+  pool:
+    vmImage: ubuntu-latest
+  # relative path to the project root if not in root of repo
+  working_directory: ''
+  # package manager
+  package_manager: 'npm'
+  # node version
+  node_version: '10.x'
+jobs:
+- job: ${{ parameters.job_name }}
+  displayName: ${{ parameters.display_name }}
+  pool: ${{ parameters.pool }}
+  steps:
+  ##########################################
+  ## specify which node version to use
+  ##########################################
+  - task: UseNode@1
+    displayName: Set to Node.js ${{ parameters.node_version }}
+    inputs:
+      version: ${{ parameters.node_version }}
+    condition: ne('${{ parameters.node_version }}', '')
+  ##########################################
+  ## Set Solution Verison Number
+  ##########################################
+  - task: VersionJSONFile@2
+    displayName: 'Version JSON File'
+    inputs:
+      VersionNumber: $(Build.BuildNumber)
+      recursion: True
+      versionForJSONFileFormat: '{1}.{2}.{3}.{4}'
+      FilenamePattern: 'package-solution.json'
+      Field: version
+  ##########################################
+  ## Get Solution Verison Number
+  ##########################################
+  - script: |
+      node -e 'console.log(require("./config/package-solution.json").solution.version)' 
+    displayName: Get Solution Version Number
+    name: SolutionVersion
+  ##########################################
+  ## Install NPM Package Manager
+  ##########################################
+  - script: VERSION_TAG=`git describe --tags` && echo "##vso[task.setvariable variable=version_tag]$version_tag"
+    displayName: Set the tag name as an environment variable
+
+  ##########################################
+  ## Install NPM Package Manager
+  ##########################################
+  - task: Npm@1
+    displayName: 'Install NPM Package Manager'
+    inputs:
+      verbose: false
+  ##########################################
+  ## execute: gulp build --ship
+  ##########################################
+  - task: Gulp@1
+    displayName: SPFx build
+    inputs:
+      gulpFile: gulpfile.js
+      workingDirectory: ${{ parameters.working_directory }}
+      targets: build
+      arguments: --ship
+  ##########################################
+  ## execute: gulp bundle --ship
+  ##########################################
+  - task: Gulp@1
+    displayName: SPFx bundle
+    inputs:
+      gulpFile: gulpfile.js
+      workingDirectory: ${{ parameters.working_directory }}
+      targets: bundle
+      arguments: --ship
+  ##########################################
+  ## execute: gulp package-solution --ship
+  ##########################################
+  - task: Gulp@1
+    displayName: SPFx package solution (production)
+    inputs:
+      gulpFile: gulpfile.js
+      workingDirectory: ${{ parameters.working_directory }}
+      targets: package-solution
+      arguments: --ship
+  ##########################################
+  ## determine name of generated *.sppkg
+  ##########################################
+  - script: |
+      CMD_GET_SPPKG_NAME=$(find . -name '*.sppkg' -exec basename {} \;)
+      echo "##vso[task.setvariable variable=SpPkgFileName;isOutput=true]${CMD_GET_SPPKG_NAME}"
+    displayName: Get generated *.sppkg filename
+    name: GetSharePointPackage
+  ##########################################
+  ## publish *.sppkg as build artifact
+  ##########################################
+  - task: PublishPipelineArtifact@1
+    displayName: Publish SharePoint package (*.sppkg)
+    inputs:
+      targetPath: $(Build.Repository.LocalPath)/${{ parameters.working_directory }}/sharepoint/solution/$(GetSharePointPackage.SpPkgFileName)
+      artifact: spfx-package

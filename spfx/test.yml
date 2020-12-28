@@ -1,0 +1,70 @@
+parameters:
+  # unique name of the job
+  job_name: run_tests
+  # friendly name of the job
+  display_name: Execute tests
+  # agent pool details (default: MSFT hosted Ubuntu)
+  pool:
+    vmImage: ubuntu-latest
+  # relative path to the project root if not in root of repo
+  working_directory: ''
+  # package manager
+  package_manager: 'npm'
+  # node version
+  node_version: '10.x'
+
+jobs:
+- job: ${{ parameters.job_name }}
+  displayName: ${{ parameters.display_name }}
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  ##########################################
+  ## specify which node version to use
+  ##########################################
+  - task: UseNode@1
+    displayName: Set to Node.js ${{ parameters.node_version }}
+    inputs:
+      version: ${{ parameters.node_version }}
+    condition: ne('${{ parameters.node_version }}', '')
+  ##########################################
+  ## Install NPM Package Manager
+  ##########################################
+  - task: Npm@1
+    displayName: 'Install NPM Package Manager'
+    inputs:
+      verbose: false
+  ##########################################
+  ## execute: gulp build
+  ##########################################
+  - task: Gulp@1
+    displayName: SPFx build
+    inputs:
+      gulpFile: gulpfile.js
+      workingDirectory: ${{ parameters.working_directory }}
+      targets: build
+  ##########################################
+  ## execute tests
+  ##########################################
+  - script: npm test
+    displayName: Run unit tests from test script (with NPM)
+    workingDirectory: ${{ parameters.working_directory }}
+    condition: eq('${{ parameters.package_manager }}', 'npm')
+    continueOnError: true
+  ##########################################
+  ## publish code coverage results to devops pipeline run
+  ##########################################
+  - task: PublishCodeCoverageResults@1
+    displayName: Publish code coverage results
+    inputs:
+      codeCoverageTool: cobertura
+      summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/*coverage.xml'
+  ##########################################
+  ## publish junit test results to devops pipeline run
+  ##########################################
+  - task: PublishTestResults@2
+    displayName: Publish test results
+    inputs:
+      testResultsFormat: JUnit
+      testResultsFiles: '**/junit.xml'
+      failTaskOnFailedTests: true
