@@ -33,7 +33,7 @@ jobs:
         - task: AzureCLI@2
           displayName: Purge Azure CDN Endpoint '$(endpoint_name)'
           inputs:
-            azureSubscription: '$(azure_subscription)'
+            azureSubscription: 'FaganCloudAzure'
             scriptType: 'batch'
             scriptLocation: 'inlineScript'
             inlineScript: 'az cdn endpoint purge -g $(resource_group_name) -n $(endpoint_name) --profile-name $(profile_name) --content-paths ''/*'''
