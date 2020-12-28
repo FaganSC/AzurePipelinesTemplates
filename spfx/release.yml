@@ -49,7 +49,7 @@ jobs:
         ##########################################
         - task: GitHubRelease@1
           inputs:
-            gitHubConnection: 'FaganSC-GitHub'
+            gitHubConnection: '$(gitHubConnection)'
             repositoryName: '$(Build.Repository.Name)'
             action: 'create'
             target: '$(Build.SourceVersion)'
