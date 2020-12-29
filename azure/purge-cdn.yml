@@ -22,7 +22,7 @@ jobs:
 - job: ${{ parameters.job_name }}
   displayName: ${{ parameters.display_name }}
   pool:
-    vmImage: ${{ parameters.pool }}
+    vmImage: ${{ parameters.pool.vmImage }}
   condition: ${{ parameters.condition }}
   steps:
   ##########################################
