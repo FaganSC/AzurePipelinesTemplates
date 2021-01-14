@@ -1,6 +1,6 @@
 parameters:
   # unique name of the job
-  job_name: gitbubrelease
+  job_name: githubrelease
   # friendly name of the job
   display_name: GitHub Release
   # agent pool details (default: MSFT hosted Ubuntu)
