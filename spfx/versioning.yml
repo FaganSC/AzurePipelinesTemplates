@@ -4,21 +4,19 @@ parameters:
   # friendly name of the job
   display_name: Set Versioning
   # agent pool details (default: MSFT hosted Ubuntu)
-  majorVersion: ''
   pool:
     vmImage: ubuntu-latest
 jobs:
 - job: ${{ parameters.job_name }}
   displayName: 'Set Build Number'
-  condition: eq(variables['build.sourcebranchname'], 'develop')
-  variables:
-      rev: $[counter(variables['build.sourcebranchname'], 0)]
   pool: ${{ parameters.pool }}
   steps:
-  - script: |
-      buildCounter=$[counter(variables['build.sourcebranchname'], 0)]
-      new_buildnumber=$(PATCHVERSION).$buildCounter
-      echo "##vso[task.setvariable variable=newBuildnumber;isOutput=true]${new_buildnumber}"
-    displayName: 'Set Build Number'
-    name: setVersion
+    - script: VERSION_TAG=`git describe --tags` && echo "##vso[task.setvariable variable=VERSION_TAG]$VERSION_TAG"
+      displayName: Set the tag name as an environment variable
+    - script: |
+        buildCounter=$[counter(variables['build.sourcebranchname'], 0)]
+        new_buildnumber=$(PATCHVERSION).$buildCounter
+        echo "##vso[task.setvariable variable=newBuildnumber;isOutput=true]${new_buildnumber}"
+      displayName: 'Set Build Number'
+      name: setVersion
   
