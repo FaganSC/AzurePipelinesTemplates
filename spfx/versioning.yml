@@ -10,7 +10,7 @@ parameters:
 jobs:
 - job: ${{ parameters.job_name }}
   displayName: 'Set Build Number'
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
+  condition: eq(variables['build.sourcebranchname'], 'refs/heads/develop')
   variables:
       rev: $[counter(variables['build.sourcebranchname'], 0)]
   pool: ${{ parameters.pool }}
