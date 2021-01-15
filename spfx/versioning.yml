@@ -14,9 +14,10 @@ jobs:
     - script: VERSION_TAG=`git describe --tags` && echo "##vso[task.setvariable variable=VERSION_TAG;isOutput=true]$VERSION_TAG"
       displayName: Set the tag name as an environment variable
     - script: |
-        buildCounter=$[counter(variables['build.sourcebranchname'], 0)]
+        buildCounter=$[counter($(VERSION_TAG), 0)]
         new_buildnumber=$(VERSION_TAG).$buildCounter
         echo "##vso[task.setvariable variable=newBuildnumber;isOutput=true]${new_buildnumber}"
       displayName: 'Set Build Number'
       name: setVersion
-  
+    - script: |
+        node -e 'console.log(require("./config/package-solution.json").solution.version)' 
