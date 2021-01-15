@@ -20,4 +20,4 @@ jobs:
       displayName: 'Set Build Number'
       name: setVersion
     - script: |
-        node -e 'console.log(require("./config/package-solution.json").solution.version)' 
+        node -e 'console.log($(VERSION_TAG))' 
