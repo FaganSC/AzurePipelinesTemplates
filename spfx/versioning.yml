@@ -15,7 +15,7 @@ jobs:
       displayName: Set the tag name as an environment variable
     - script: |
         buildCounter=$[counter(variables['build.sourcebranchname'], 0)]
-        new_buildnumber=$(PATCHVERSION).$buildCounter
+        new_buildnumber=$(VERSION_TAG).$buildCounter
         echo "##vso[task.setvariable variable=newBuildnumber;isOutput=true]${new_buildnumber}"
       displayName: 'Set Build Number'
       name: setVersion
