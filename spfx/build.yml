@@ -46,12 +46,6 @@ jobs:
   ##########################################
   ## Install NPM Package Manager
   ##########################################
-  - script: VERSION_TAG=`git describe --tags` && echo "##vso[task.setvariable variable=version_tag]$version_tag"
-    displayName: Set the tag name as an environment variable
-
-  ##########################################
-  ## Install NPM Package Manager
-  ##########################################
   - task: Npm@1
     displayName: 'Install NPM Package Manager'
     inputs:
