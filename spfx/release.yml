@@ -1,6 +1,6 @@
 parameters:
   # unique name of the job
-  job_name: gitbubrelease
+  job_name: githubrelease
   # friendly name of the job
   display_name: GitHub Release
   # agent pool details (default: MSFT hosted Ubuntu)
@@ -14,7 +14,7 @@ parameters:
   condition: { }  
   isPreRelease: False
   hasChangeLog: False
-  variables_group: ''
+  gitHubConnection: ''
   release_title: '$(Build.BuildNumber)'
 jobs:
 - deployment: ${{ parameters.job_name }}
@@ -22,8 +22,6 @@ jobs:
   pool: ${{ parameters.pool }}
   environment: ${{ parameters.target_environment }}
   condition: ${{ parameters.condition }}
-  variables:
-  - group: ${{ parameters.variables_group }}
   strategy:
     runOnce:
       deploy:
@@ -49,7 +47,7 @@ jobs:
         ##########################################
         - task: GitHubRelease@1
           inputs:
-            gitHubConnection: '$(gitHubConnection)'
+            gitHubConnection: '${{ parameters.gitHubConnection }}'
             repositoryName: '$(Build.Repository.Name)'
             action: 'create'
             target: '$(Build.SourceVersion)'

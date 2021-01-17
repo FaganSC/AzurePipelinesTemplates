@@ -1,0 +1,14 @@
+jobs:
+  - job: Build_PSCore_MacOS1013
+    pool:
+      vmImage: macOS-latest
+    steps:
+      - script: |
+          brew update
+          brew tap caskroom/cask
+          brew install mono-libgdiplus
+          brew install --cask powershell
+        displayName: "Install PowerShell Core"
+      - script: |
+          pwsh -c '.\PSWriteHTML.Tests.ps1'
+        displayName: "Run Pester Tests"
