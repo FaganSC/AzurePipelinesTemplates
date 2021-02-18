@@ -13,6 +13,7 @@ parameters:
   # node version
   node_version: '10.x'
   versionNumber: ''
+  buildIncrement: ''
 jobs:
 - job: ${{ parameters.job_name }}
   displayName: ${{ parameters.display_name }}
@@ -32,7 +33,7 @@ jobs:
   - task: VersionJSONFile@2
     displayName: 'Version JSON File'
     inputs:
-      VersionNumber: ${{ parameters.versionNumber }}
+      VersionNumber: ${{ parameters.versionNumber }}.${{ parameters.buildIncrement }}
       recursion: True
       versionForJSONFileFormat: '{1}.{2}.{3}.{4}'
       FilenamePattern: 'package-solution.json'
