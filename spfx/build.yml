@@ -12,7 +12,6 @@ parameters:
   package_manager: 'npm'
   # node version
   node_version: '10.x'
-  versionNumber: ''
 jobs:
 - job: ${{ parameters.job_name }}
   displayName: ${{ parameters.display_name }}
