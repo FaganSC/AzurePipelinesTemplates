@@ -1,0 +1,26 @@
+parameters:
+  # unique name of the job
+  job_name: versioning
+  # friendly name of the job
+  display_name: Set Versioning
+  # agent pool details (default: MSFT hosted Ubuntu)
+  pool:
+    vmImage: ubuntu-latest
+jobs:
+- job: ${{ parameters.job_name }}
+  displayName: 'Set Build Number'
+  pool: ${{ parameters.pool }}
+  steps:
+  - powershell: |
+      $VERSION_TAG = git describe --tags
+            Write-Output $VERSION_TAG
+            $temp = "$VERSION_TAG".Split("-")
+            $versionNumber = $temp[0]
+            $majorVer = $versionNumber.Split(".")[0].Replace("v","")
+            $minorVer = $versionNumber.Split(".")[1]
+            $patchVer = $versionNumber.Split(".")[2]
+            if ($temp[1]){ $revVer = $temp[1] } else { $revVer = 0 }
+            Write-Output "$($majorVer).$($minorVer).$($patchVer).$($revVer)"
+            $verNum = "$($majorVer).$($minorVer).$($patchVer).$($revVer)"
+            Write-Host "##vso[build.updatebuildnumber]$verNum"
+    displayName: Set the tag name as an environment variable

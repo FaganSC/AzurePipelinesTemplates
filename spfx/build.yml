@@ -37,13 +37,6 @@ jobs:
       FilenamePattern: 'package-solution.json'
       Field: version
   ##########################################
-  ## Get Solution Verison Number
-  ##########################################
-  - script: |
-      node -e 'console.log(require("./config/package-solution.json").solution.version)' 
-    displayName: Get Solution Version Number
-    name: SolutionVersion
-  ##########################################
   ## Install NPM Package Manager
   ##########################################
   - task: Npm@1
