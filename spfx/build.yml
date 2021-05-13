@@ -11,7 +11,7 @@ parameters:
   # package manager
   package_manager: 'npm'
   # node version
-  node_version: ${{ parameters.node_version }}
+  node_version: ''
 jobs:
 - job: ${{ parameters.job_name }}
   displayName: ${{ parameters.display_name }}
