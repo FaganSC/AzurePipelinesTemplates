@@ -9,9 +9,9 @@ parameters:
   # relative path to the project root if not in root of repo
   working_directory: ''
   # package manager
-  package_manager: 'npm'
+  package_manager: ${{ parameters.package_manager }}
   # node version
-  node_version: ''
+  node_version: ${{ parameters.node_version }}
 jobs:
 - job: ${{ parameters.job_name }}
   displayName: ${{ parameters.display_name }}
